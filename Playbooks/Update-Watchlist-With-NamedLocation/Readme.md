@@ -1,14 +1,14 @@
 # Update-Watchlist-With-NamedLocation
 
 
-author: Maria de Sousa-Valadas
-version: 1.0
+author: Maria de Sousa-Valadas </br>
+version: 1.1
 
 
 This Logic App runs on a scheduled basis (every 7 days by default) and checks if new IP ranges have been added to your Named Location. If there are new IP ranges, they will be added to your preexisting Azure Sentinel Watchlist, which you can then use in queries, analytics, hunting queries, etc. for correlation.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Sentinel%2Fmaster%2FPlaybooks%2FUpdate-Watchlist-With-NamedLocation%2Fazuredeploy.json)
-[![Deploy to Azure Gov](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazuregov.png)](https://portal.azure.us/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Sentinel%2Fmaster%2FPlaybooks%2FUpdate-Watchlist-With-NamedLocation%2Fazuredeploy.json)
+[![Deploy to Azure Gov](https://aka.ms/deploytoazuregovbutton)](https://portal.azure.us/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Sentinel%2Fmaster%2FPlaybooks%2FUpdate-Watchlist-With-NamedLocation%2Fazuredeploy.json)
 
  
 ## Pre-requisites
@@ -32,6 +32,6 @@ This Logic App runs on a scheduled basis (every 7 days by default) and checks if
 2.	The logic app is set to run every 7 days. You can modify the frequency on the first step.
  
  
-##Configure connections:
+## Configure connections:
 1.	On the step "Get secret" you will need to update your connection. Select Change Connection, then Add new, and finally Connect with managed identity (preview). Fill in the information. As you have previously granted permission to the keyvault, you should be able to select the Secret.
 2.	In the last step, you may need to update your connection to Azure Sentinel as well.

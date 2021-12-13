@@ -11,6 +11,9 @@ requiredDataConnectors:
   - connectorId: SecurityEvents
     dataTypes:
       - SecurityEvent
+  - connectorId: WindowsSecurityEvents
+    dataTypes:
+      - SecurityEvent
 queryFrequency: 6h
 queryPeriod: 6h
 triggerOperator: gt
@@ -63,3 +66,4 @@ entityMappings:
       - identifier: Address
         columnName: IPCustomEntity
 version: 1.0.0
+kind: Scheduled
