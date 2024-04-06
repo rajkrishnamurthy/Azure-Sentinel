@@ -3,8 +3,12 @@ name: Cisco SEG - Unexpected attachment
 description: |
   'Detects possibly malicious attachments.'
 severity: High
+status: Available
 requiredDataConnectors:
   - connectorId: CiscoSEG
+    dataTypes:
+      - CiscoSEGEvent
+  - connectorId: CiscoSEGAma
     dataTypes:
       - CiscoSEGEvent
 queryFrequency: 1h
@@ -27,5 +31,5 @@ entityMappings:
     fieldMappings:
       - identifier: Name
         columnName: AccountCustomEntity
-version: 1.0.0
+version: 1.0.1
 kind: Scheduled

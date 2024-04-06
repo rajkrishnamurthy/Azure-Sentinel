@@ -3,8 +3,12 @@ name: Claroty - New Asset
 description: |
   'Triggers when a new asset has been added into the environment.'
 severity: High
+status: Available
 requiredDataConnectors:
   - connectorId: Claroty
+    dataTypes:
+      - ClarotyEvent
+  - connectorId: ClarotyAma
     dataTypes:
       - ClarotyEvent
 queryFrequency: 1h
@@ -25,5 +29,5 @@ entityMappings:
     fieldMappings:
       - identifier: Address
         columnName: IPCustomEntity
-version: 1.0.0
+version: 1.0.1
 kind: Scheduled

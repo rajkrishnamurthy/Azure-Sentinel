@@ -3,8 +3,12 @@ name: Cisco SEG - Malicious attachment not blocked
 description: |
   'Detects mails with malicious attachments which were not blocked.'
 severity: High
+status: Available
 requiredDataConnectors:
   - connectorId: CiscoSEG
+    dataTypes:
+      - CiscoSEGEvent
+  - connectorId: CiscoSEGAma
     dataTypes:
       - CiscoSEGEvent
 queryFrequency: 10m
@@ -28,5 +32,5 @@ entityMappings:
     fieldMappings:
       - identifier: Name
         columnName: AccountCustomEntity
-version: 1.0.0
+version: 1.0.1
 kind: Scheduled

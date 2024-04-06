@@ -3,10 +3,11 @@ name: TI map IP entity to LastPass data
 description: |
   'Identifies a match in LastPass table from any IP IOC from TI'
 severity: Medium
+status: Available
 requiredDataConnectors:
   - connectorId: LastPass
     dataTypes:
-      - LastPass_BYOC_CL
+      - LastPassNativePoller_CL
   - connectorId: ThreatIntelligence
     dataTypes:
       - ThreatIntelligenceIndicator
@@ -34,7 +35,7 @@ query: |
     | extend TI_ipEntity = iff(isempty(TI_ipEntity) and isnotempty(NetworkSourceIP), NetworkSourceIP, TI_ipEntity)
     | extend TI_ipEntity = iff(isempty(TI_ipEntity) and isnotempty(EmailSourceIpAddress), EmailSourceIpAddress, TI_ipEntity)
     | join (
-        LastPass_BYOC_CL | where todatetime(Time_s) >= ago(dt_lookBack)
+        LastPassNativePoller_CL | where todatetime(Time_s) >= ago(dt_lookBack)
         | where Action_s != "Reporting"
         // renaming time column so it is clear the log this came from
         | extend LastPass_TimeGenerated = todatetime(Time_s)

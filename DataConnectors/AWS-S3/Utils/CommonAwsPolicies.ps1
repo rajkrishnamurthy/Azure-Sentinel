@@ -20,7 +20,7 @@ param (
                 {
                     'Effect': 'Allow',
                     'Principal': {
-                        'AWS': 'arn:aws:iam::197857026523:root'
+                        'AWS': '$($AwsCloudResource):iam::197857026523:root'
                     },
                     'Action': 'sts:AssumeRole',
                     'Condition': {
@@ -28,6 +28,49 @@ param (
                             'sts:ExternalId': '$WorkspaceId'
                         }
                     }
+                }
+            ]
+        }"
+	return $arnRolePolicy.Replace("'",'\"')
+}
+
+function Get-OIDCRoleArnPolicy
+{
+   <#
+	.SYNOPSIS
+		Returns a customized Arn policy using the Sentinel Workspace Id
+	.PARAMETER WorkspaceId
+		Specifies the Azure Sentinel workspace id 
+	.PARAMETER CustomerAWSAccountId
+		Specifies the customer AWS account id
+   #>
+[OutputType([string])]
+[CmdletBinding()]
+param (
+	[Parameter(position=0)]
+	[ValidateNotNullOrEmpty()]
+	[string]
+	$WorkspaceId,
+	[Parameter(position=1)]
+	[ValidateNotNullOrEmpty()]
+	[string]
+	$CustomerAWSAccountId
+)  
+   $arnRolePolicy = "{
+            'Version': '2012-10-17',
+            'Statement': [
+                {
+                    'Effect': 'Allow',
+					'Principal': {
+						'Federated': '$($AwsCloudResource):iam::$($CustomerAWSAccountId):oidc-provider/sts.windows.net/$($SentinelTenantId)/'
+					},
+                    'Action': 'sts:AssumeRoleWithWebIdentity',
+					'Condition': {
+						'StringEquals': {
+							'sts.windows.net/$($SentinelTenantId)/:aud': '$($SentinelClientId)',
+							'sts:RoleSessionName': 'MicrosoftSentinel_$WorkspaceId'
+						}
+					}
                 }
             ]
         }"
@@ -72,7 +115,7 @@ function Get-S3AndRuleSQSPolicies
 			  'Resource': '$SqsArn',
 			  'Condition': {
 				'ArnLike': {
-				  'aws:SourceArn': 'arn:aws:s3:*:*:$BucketName'
+				  'aws:SourceArn': '$($AwsCloudResource):s3:*:*:$BucketName'
 				}
 			  }
 		  },
@@ -122,32 +165,42 @@ param (
 	[Parameter(position=2)]
 	[ValidateNotNullOrEmpty()]
 	[string]
-	$SqsArn
+	$SqsArn,
+	[Parameter()]
+	[bool]
+	$IsCustomLog
 )  
+	$SqsSuffix = ""
+
+	if($true -ne $IsCustomLog)
+	{
+		$SqsSuffix = ",{
+						'Name': 'suffix',
+						'Value': '.gz'
+						}"
+	}
+
 
 	$sqsEventConfig = "
-   {
-	   'QueueConfigurations': [
-			{
-			  'Id':'$EventNotificationName',
-			  'QueueArn': '$SqsArn',
-			  'Events': ['s3:ObjectCreated:*'],
-			  'Filter': {
-				'Key': {
-				  'FilterRules': [
-					{
-					  'Name': 'prefix',
-					  'Value': '$EventNotificationPrefix'
-					},
-					{
-					  'Name': 'suffix',
-					  'Value': '.gz'
+	{
+		'QueueConfigurations': [
+				{
+				'Id':'$EventNotificationName',
+				'QueueArn': '$SqsArn',
+				'Events': ['s3:ObjectCreated:*'],
+				'Filter': {
+					'Key': {
+					'FilterRules': [
+						{
+						'Name': 'prefix',
+						'Value': '$EventNotificationPrefix'
+						}
+						$SqsSuffix
+					]
 					}
-				  ]
 				}
-			  }
-			}
-		]
+				}
+			]
 	}"
 
 	return $sqsEventConfig.Replace("'",'"')
@@ -182,7 +235,7 @@ param (
                 'AWS': '$RoleArn'
             },
             'Action': ['s3:GetObject'],
-            'Resource': 'arn:aws:s3:::$BucketName/*'
+            'Resource': '$($AwsCloudResource):s3:::$BucketName/*'
         }]}"
 			
 	return $s3PolicyForArn.Replace("'",'"')
